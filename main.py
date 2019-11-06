@@ -1,5 +1,7 @@
 import tcod
 import tcod.event
+import ui
+import esper
 
 class EventBus(tcod.event.EventDispatch):
     def on_enter(self):
@@ -21,14 +23,18 @@ def main():
 
     tcod.console_set_custom_font('arial12x12.png', tcod.FONT_TYPE_GREYSCALE | tcod.FONT_LAYOUT_TCOD)
     root = tcod.console_init_root(SW, SH, "Tales of the Golden Lotus", renderer=tcod.RENDERER_OPENGL2, vsync=False)
-    eb = EventBus()
+    world = esper.World()
+    ui.MANAGER.push_screen(ui.MainScreen(world, root))
+    
 
     while True:
-        tcod.console_put_char(root, 1, 1, '@', tcod.BKGND_NONE)
+        for sc in ui.MANAGER.screens:
+            sc.on_draw()
+
         tcod.console_flush()
 
         for ev in tcod.event.get():
-            eb.dispatch(ev)
+            ui.MANAGER.cur_screen.dispatch(ev)
 
 
 if __name__ == "__main__":
